@@ -1,6 +1,6 @@
 """Blogly application."""
 
-from flask import Flask, redirect, render_template
+from flask import Flask, request, redirect, render_template
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 
@@ -12,7 +12,6 @@ app.config['SECRET_KEY'] = "SECRET!"
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
-db.drop_all()
 db.create_all()
 
 
@@ -27,9 +26,7 @@ def redirect_to_users():
 def users_page():
     """Show all users."""
 
-    users = db.session.query(
-        User.first_name, User.last_name
-    ).all()
+    users = db.session.query(User.first_name, User.last_name).all()
 
     return render_template("user_list.html", users=users)
 
@@ -46,8 +43,13 @@ def add_new_form():
     """Process the add form, adding a new user and going back to /users"""
 
     new_user = User(
-        first_name = request.form()
-    )
+      first_name = request.form("first_name"),
+      last_name = request.form("last_name"),
+      image_url = request.form("image_url"))
+
+    db.session.add(new_user)
+    db.session.commit()
+
     return redirect("/users")
 
 
@@ -55,19 +57,31 @@ def add_new_form():
 def show_user_info(user_id):
     """Show information about the given user."""
 
-    return render_template("user_detail.html")
+    user = User.query.get_or_404(user_id)
+
+    return render_template("user_detail.html", user=user)
 
 
 @app.get("/users/<int:user_id>/edit")
 def show_edit_page(user_id):
     """Show the edit page for a user."""
 
-    return render_template("edit_user.html")
+    user = User.query.get_or_404(user_id)
+
+    return render_template("edit_user.html", user=user)
 
 
 @app.post("/users/<int:user_id>/edit")
 def process_edit_form(user_id):
     """Process the edit form and return user to the /users page."""
+
+    user = User.query.get_or_404(user_id)
+    user.first_name = request.form("first_name")
+    user.last_name = request.form("last_name")
+    user.image_url = request.form("image_url")
+
+    db.session.add(user)
+    db.session.commit()
 
     return redirect("/users")
 
@@ -75,5 +89,9 @@ def process_edit_form(user_id):
 @app.post("/users/<int:user_id>/delete")
 def delete_user_page(user_id):
     """Delete the user."""
+
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
 
     return redirect("/users")
