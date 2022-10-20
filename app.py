@@ -48,7 +48,9 @@ def add_new_form():
     new_user = User(
         first_name=request.form["first_name"],
         last_name=request.form["last_name"],
-        image_url=request.form["image_url"])
+        image_url=request.form["image_url"] or None) #NULL for image url.
+        # Image url is empty string if not provided.
+        # Want to trigger default option (DEFAULT IMG URL)
 
     db.session.add(new_user)
     db.session.commit()
@@ -82,6 +84,7 @@ def process_edit_form(user_id):
     user.first_name = request.form["first_name"]
     user.last_name = request.form["last_name"]
     user.image_url = request.form["image_url"]
+    # If no image then get an empty string.
 
     db.session.add(user)
     db.session.commit()
