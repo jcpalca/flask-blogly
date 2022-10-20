@@ -113,3 +113,25 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Spencer", html)
             self.assertIn("Brit", html)
+
+    def test_post_add_invalid_user(self):
+        """Tests if redirection to users page works if data is invalid."""
+        with self.client as c:
+            resp = c.post("/users/new", data={"first_name": "",
+                                              "last_name": "",
+                                              "image_url": ''})
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, "/users/new")
+
+    def test_post_add_invalid_user_followed(self):
+        """Test if users page reached and results show after invalid
+        redirection."""
+
+        with self.client as c:
+            resp = c.post("/users/new", data={"first_name": "",
+                                              "last_name": "",
+                                              "image_url": ''},
+                                              follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Please enter a valid first and last name", html)
