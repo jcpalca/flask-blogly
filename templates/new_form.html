@@ -5,6 +5,9 @@
 {% block content %}
 
   <h1>Create a user</h1>
+  {% for error in get_flashed_messages() %}
+    <p class="alert alert-danger">{{ error }}</p>
+  {% endfor %}
 
   <form method="POST">
     <div>
@@ -12,21 +15,24 @@
       <input type="text"
              name="first_name"
              id="fn"
-             placeholder="Enter a first name">
+             placeholder="Enter a first name"
+             value="{{ first_name }}">
     </div>
     <div>
       <label for="ln">Last Name</label>
       <input type="text"
              name="last_name"
              id="ln"
-             placeholder="Enter a last name">
+             placeholder="Enter a last name"
+             value="{{ last_name }}">
     </div>
     <div>
       <label for="img">Image URL</label>
       <input type="text"
              name="image_url"
              id="img"
-             placeholder="Provide an image of this user">
+             placeholder="Provide an image of this user"
+             value="{{ image_url }}">
     </div>
     <button type="submit" class="btn btn-success">
       ADD
