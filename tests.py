@@ -1,10 +1,12 @@
 from unittest import TestCase
 
 from app import app, db
-from models import User
+from models import DEFAULT_IMG_URL, User
 
 # Let's configure our app to use a different database for tests
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -88,7 +90,21 @@ class UserViewTestCase(TestCase):
 
     def test_post_add_user(self):
         with self.client as c:
-            resp = c.post("/users/new", data=User.query.get(1))
+            resp = c.post("/users/new", data={"first_name": "Spencer",
+                                              "last_name": "Brit",
+                                              "image_url": DEFAULT_IMG_URL})
+
             self.assertEqual(resp.status_code, 302)
             self.assertEqual(resp.location, "/users")
 
+    def test_post_add_user_followed(self):
+        with self.client as c:
+            resp = c.post("/users/new", data={"first_name": "Spencer",
+                                              "last_name": "Brit",
+                                              "image_url": DEFAULT_IMG_URL},
+                                              follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Spencer", html)
+            self.assertIn("Brit", html)
