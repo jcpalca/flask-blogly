@@ -4,9 +4,9 @@ from app import app, db
 from models import DEFAULT_IMG_URL, User, connect_db
 
 # Let's configure our app to use a different database for tests
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
-# app.config['SQLALCHEMY_DATABASE_URI'] = (
-#     "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
