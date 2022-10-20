@@ -1,12 +1,12 @@
 from unittest import TestCase
 
 from app import app, db
-from models import DEFAULT_IMG_URL, User
+from models import DEFAULT_IMG_URL, User, connect_db
 
 # Let's configure our app to use a different database for tests
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#     "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -18,6 +18,7 @@ app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 # once for all tests --- in each test, we'll delete the data
 # and create fresh new clean test data
 
+connect_db(app)
 db.create_all()
 
 
@@ -60,6 +61,7 @@ class UserViewTestCase(TestCase):
         db.session.rollback()
 
     def test_list_users(self):
+        """Test if users list page html appears."""
         with self.client as c:
             resp = c.get("/users")
             self.assertEqual(resp.status_code, 200)
@@ -68,12 +70,14 @@ class UserViewTestCase(TestCase):
             self.assertIn("test_last", html)
 
     def test_users_redirection(self):
+        """Test redirect from root to users page."""
         with self.client as c:
             resp = c.get("/")
             self.assertEqual(resp.status_code, 302)
             self.assertEqual(resp.location, "/users")
 
     def test_users_redirection_followed(self):
+        """Test if users page reached after redirection."""
         with self.client as c:
             resp = c.get("/", follow_redirects=True)
             html = resp.get_data(as_text=True)
@@ -82,6 +86,7 @@ class UserViewTestCase(TestCase):
             self.assertIn("test_last", html)
 
     def test_get_add_user(self):
+        """Test if new user form page is rendered with html."""
         with self.client as c:
             resp = c.get("/users/new")
             self.assertEqual(resp.status_code, 200)
@@ -89,22 +94,22 @@ class UserViewTestCase(TestCase):
             self.assertIn("<h1>Create a user</h1>", html)
 
     def test_post_add_user(self):
+        """Tests if redirection to users page works if data is valid."""
         with self.client as c:
             resp = c.post("/users/new", data={"first_name": "Spencer",
                                               "last_name": "Brit",
                                               "image_url": DEFAULT_IMG_URL})
-
             self.assertEqual(resp.status_code, 302)
             self.assertEqual(resp.location, "/users")
 
     def test_post_add_user_followed(self):
+        """Test if users page reached and results show after redirection."""
         with self.client as c:
             resp = c.post("/users/new", data={"first_name": "Spencer",
                                               "last_name": "Brit",
                                               "image_url": DEFAULT_IMG_URL},
                                               follow_redirects=True)
             html = resp.get_data(as_text=True)
-
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Spencer", html)
             self.assertIn("Brit", html)
