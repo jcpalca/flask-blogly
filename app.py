@@ -5,9 +5,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-  'postgresql://otherjoel:hello@13.57.9.123/otherjoel')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#   'postgresql://otherjoel:hello@13.57.9.123/otherjoel')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
