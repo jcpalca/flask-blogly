@@ -7,6 +7,7 @@ from models import db, connect_db, User
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = "SECRET!"
 debug = DebugToolbarExtension(app)
@@ -26,7 +27,7 @@ def redirect_to_users():
 def users_page():
     """Show all users."""
 
-    users = db.session.query(User.first_name, User.last_name).all()
+    users = User.query.all()
 
     return render_template("user_list.html", users=users)
 
@@ -43,9 +44,9 @@ def add_new_form():
     """Process the add form, adding a new user and going back to /users"""
 
     new_user = User(
-      first_name = request.form("first_name"),
-      last_name = request.form("last_name"),
-      image_url = request.form("image_url"))
+        first_name=request.form["first_name"],
+        last_name=request.form["last_name"],
+        image_url=request.form["image_url"])
 
     db.session.add(new_user)
     db.session.commit()
@@ -76,9 +77,9 @@ def process_edit_form(user_id):
     """Process the edit form and return user to the /users page."""
 
     user = User.query.get_or_404(user_id)
-    user.first_name = request.form("first_name")
-    user.last_name = request.form("last_name")
-    user.image_url = request.form("image_url")
+    user.first_name = request.form["first_name"]
+    user.last_name = request.form["last_name"]
+    user.image_url = request.form["image_url"]
 
     db.session.add(user)
     db.session.commit()
