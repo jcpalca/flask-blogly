@@ -7,16 +7,16 @@
   {% if user.image_url %}
   <img src="{{ user.image_url }}" alt="User Image">
   {% endif %}
-  <h1>{{ first_name }} {{ last_name }}</h1>
+  <h1>{{ user.first_name }} {{ user.last_name }}</h1>
 
   <form>
     <button class="btn btn-primary"
-            formaction="/users/{{ user_id }}/edit"
+            formaction="/users/{{ user.id }}/edit"
             formmethod="GET">
       Edit
     </button>
     <button class="btn btn-danger"
-            formaction="/users/{{ user_id }}/delete"
+            formaction="/users/{{ user.id }}/delete"
             formmethod="POST">
       Delete
     </button>
