@@ -98,7 +98,7 @@ class UserViewTestCase(TestCase):
         with self.client as c:
             resp = c.post("/users/new", data={"first_name": "Spencer",
                                               "last_name": "Brit",
-                                              "image_url": DEFAULT_IMG_URL})
+                                              "image_url": ''})
             self.assertEqual(resp.status_code, 302)
             self.assertEqual(resp.location, "/users")
 
@@ -107,7 +107,7 @@ class UserViewTestCase(TestCase):
         with self.client as c:
             resp = c.post("/users/new", data={"first_name": "Spencer",
                                               "last_name": "Brit",
-                                              "image_url": DEFAULT_IMG_URL},
+                                              "image_url": ''},
                                               follow_redirects=True)
             html = resp.get_data(as_text=True)
             self.assertEqual(resp.status_code, 200)
