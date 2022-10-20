@@ -1,6 +1,7 @@
 """Blogly application."""
 
-from flask import Flask, request, redirect, render_template
+from sqlite3 import IntegrityError
+from flask import Flask, request, redirect, render_template, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 
@@ -46,11 +47,15 @@ def add_new_form():
     """Process the add form, adding a new user and going back to /users"""
 
     new_user = User(
-        first_name=request.form["first_name"],
-        last_name=request.form["last_name"],
-        image_url=request.form["image_url"] or None) #NULL for image url.
-        # Image url is empty string if not provided.
-        # Want to trigger default option (DEFAULT IMG URL)
+        first_name=request.form["first_name"] or None,
+        last_name=request.form["last_name"] or None,
+        image_url=request.form["image_url"] or None)  # NULL for image url.
+    # Image url is empty string if not provided.
+    # Want to trigger default option (DEFAULT IMG URL)
+
+    if new_user.first_name == None or new_user.last_name == None:
+        flash("Please enter a valid first and last name.")
+        return redirect("/users/new")
 
     db.session.add(new_user)
     db.session.commit()
