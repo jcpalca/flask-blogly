@@ -6,32 +6,38 @@
 
 <h1>Create a user</h1>
 
-<form method="POST">
+<form>
   <div>
     <label for="fn">First Name</label>
     <input type="text"
            name="first_name"
            id="fn"
-           placeholder="Joel">
+           placeholder="{{ user.first_name }}">
   </div>
   <div>
     <label for="ln">Last Name</label>
     <input type="text"
            name="last_name"
            id="ln"
-           placeholder="Burton">
+           placeholder="{{ user.last_name }}">
   </div>
   <div>
     <label for="img">Image URL</label>
     <input type="text"
            name="image_url"
            id="img"
-           placeholder="http://joelburton.com/joel-burton.jpg">
+           placeholder="{{ user.image_url }}">
   </div>
-  <button type="submit" class="btn btn-outline-info">
+  <button type="submit"
+          class="btn btn-outline-info"
+          formaction="/users/{{ user.id }}"
+          formmethod="GET">
     Cancel
   </button>
-  <button type="submit" class="btn btn-success">
+  <button type="submit"
+          class="btn btn-success"
+          formaction="/users/{{ user.id }}/edit"
+          formmethod="POST">
     Save
   </button>
 </form>
