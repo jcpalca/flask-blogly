@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} {{ Name }} {% endblock %}
+{% block title %} {{ user.first_name }} {{ user.last_name }} {% endblock %}
 
 {% block content %}
 
@@ -20,6 +20,17 @@
             formmethod="POST">
       Delete
     </button>
+  </form>
+
+  <h2>Posts</h2>
+
+  <ul>
+    {% for post in posts %}
+    <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+    {% endfor %}
+  </ul>
+  <form action="/users/{{ user.id }}/posts/new">
+    <button type="submit" class="btn btn-primary">Add Post</button>
   </form>
 
 {% endblock %}
