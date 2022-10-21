@@ -4,9 +4,9 @@ from app import app, db
 from models import DEFAULT_IMG_URL, User, connect_db
 
 # Let's configure our app to use a different database for tests
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#     "postgresql://otherjoel:hello@13.57.9.123/otherjoel_test")
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -135,3 +135,28 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Please enter a valid first and last name", html)
+
+    def test_get_add_post(self):
+        """Test if new post form page is rendered with html."""
+        with self.client as c:
+            user_data = User.query.all()
+            test_user = user_data[0]
+            resp = c.get(f"/users/{test_user.id}/posts/new")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("Create Post", html)
+
+    def test_post_add_post(self):
+        """Tests if redirection to user detail page works if data is valid."""
+        with self.client as c:
+            user_data = User.query.all()
+            test_user = user_data[0]
+            resp = c.post(f"/users/{test_user.id}/posts/new",
+                            data={"title": "Testing",
+                            "content": "This is test content",
+                            "created_at": '',
+                            "user_id": {test_user.id}})
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, f"/users/{test_user.id}")
+
+
